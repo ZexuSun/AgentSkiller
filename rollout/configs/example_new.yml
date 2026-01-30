@@ -1,0 +1,116 @@
+# Rollout Configuration Example
+# ==============================
+# This is a new-style configuration file for the refactored Rollout framework.
+
+# Global execution settings
+max_workers: 48                    # Parallel processing workers
+resume: false                      # Resume from previous run
+use_checkpoints: true             # Enable checkpoint-based fault tolerance
+checkpoint_dir: ./checkpoints     # Directory for checkpoint files
+
+# Logging configuration
+log_level: INFO                   # DEBUG, INFO, WARNING, ERROR
+log_file: ./logs/rollout.log      # Optional log file
+
+# Verbose output (实时打印模型输出)
+verbose: true                     # 打印 agent/user/tool 的实时输出
+verbose_colors: true              # 使用彩色输出
+verbose_max_length: 500           # 内容截断长度 (0 = 不截断)
+
+# Conversation Monitor (提前终止检测)
+# 用于检测对话是否应该结束，避免 User Simulator 没发 ###STOP### 而浪费 token
+enable_monitor: true              # 启用对话监控
+monitor_rule_detection: false     # 关键词检测 (容易误判，建议关闭)
+monitor_max_no_tool_turns: 5      # 连续多少轮没有 tool call 后认为对话结束
+monitor_use_llm_judge: false      # 是否使用 LLM 二次确认 (会消耗额外 token)
+monitor_judge_model: gpt-5        # LLM 判断器使用的模型
+
+# Custom Model Registration
+# =========================
+# Register internal/self-hosted models that aren't directly supported by LiteLLM.
+# These models can then be used in agent/user configuration below.
+
+# Option 1: Inline model definitions
+# models:
+#   # Internal DeepSeek deployment
+#   deepseek-v3-1-terminus:
+#     provider: deepseek
+#     api_base: http://api.dbh.baidu-int.com/v1
+#     api_key: ${DEEPSEEK_INTERNAL_API_KEY}    # Uses environment variable
+
+# Option 2: Load from separate file
+models_config_file: ./configs/models.yml
+
+# Datasets to process
+datasets:
+  # Example: Multi-turn customer service scenario
+  CustomerService:
+    path: ./queries/cross_domain/AccessibilityServicesMCP_AgriFieldPlannerMCP_CampusNavigatorMCP.jsonl
+    output_path: ./outputs/output_dsv32_12081818.jsonl
+    
+    # MCP Domain (required for MCP Server tools)
+    # This is the combined domain name for cross-domain scenarios
+    mcp_domain: AccessibilityServicesMCP_AgriFieldPlannerMCP_CampusNavigatorMCP
+    
+    # Tools to use (MCP Server names in snake_case)
+    tools:
+      - accessibility_services_mcp
+      - agri_field_planner_mcp
+      - campus_navigator_mcp
+    
+    # Agent configuration
+    agent:
+      model: openai/deepseek-v3.2-fc    # Use registered custom model
+      temperature: 0.2
+      system_prompt_file: rollout/tools/datasets/cross_domain/policies/AgriFieldPlannerMCP_AccessibilityServicesMCP_CampusNavigatorMCP.md
+      enable_thinking: true
+      # api_key 和 api_base 已在 models.yml 中配置，无需重复配置
+      # 如果需要覆盖 models.yml 中的配置，可以在这里指定：
+      # api_key: sk-xxx
+      # api_base: https://api.xxx.com
+    
+    # User simulator (required for multi-turn)
+    user:
+      model: openai/gpt-5              # 使用 models.yml 中注册的模型
+      temperature: 1.0
+      # api_key 和 api_base 已在 models.yml 中配置，无需重复配置
+    
+    # Pipeline settings
+    max_turns: 20                      # Max conversation turns
+    max_steps_per_turn: 10             # Max tool calls per turn
+    mode: positive                     # positive, wrong_tool, no_tool
+
+  # # Example: Single-turn tool calling
+  # SingleTurnExample:
+  #   path: ./queries/single_turn/queries.jsonl
+  #   output_path: ./outputs/single_turn_output.jsonl
+    
+  #   tools:
+  #     - calculator
+  #     - search
+    
+  #   agent:
+  #     model: openai/claude-sonnet-4@20250514  # 使用 models.yml 中注册的模型
+  #     temperature: 0.5
+    
+  #   # No user config needed for single-turn
+  #   max_turns: 1
+  #   max_steps_per_turn: 5
+  #   mode: positive
+
+  # # Example: Testing wrong tool behavior
+  # WrongToolTest:
+  #   path: ./queries/test/queries.jsonl
+  #   output_path: ./outputs/wrong_tool_test.jsonl
+    
+  #   tools:
+  #     - irrelevant_tool
+    
+  #   agent:
+  #     model: openai/gpt-5              # 使用 models.yml 中注册的模型
+  #     temperature: 0.3
+    
+  #   max_turns: 1
+  #   max_steps_per_turn: 1
+  #   mode: wrong_tool                   # Agent should refuse to use wrong tools
+

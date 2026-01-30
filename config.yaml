@@ -1,0 +1,245 @@
+# =============================================================================
+# CrossDomain Workflow v2 Configuration
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# LLM Configuration
+# -----------------------------------------------------------------------------
+llm:
+  textual_model: gpt-5
+  coding_model: claude-opus-4-5-20251101
+  max_retries: 3
+  timeout: 600
+  retry_delay: 2.0
+  retry_backoff: 2.0
+  auto_continue: true
+  max_continuations: 5
+
+# -----------------------------------------------------------------------------
+# Path Configuration
+# -----------------------------------------------------------------------------
+paths:
+  checkpoints_dir: checkpoints
+  logs_dir: logs
+  outputs_dir: outputs
+  workspace: .
+
+# -----------------------------------------------------------------------------
+# Workflow Configuration
+# -----------------------------------------------------------------------------
+workflow:
+  # Parallel processing
+  max_workers: 16
+  chunk_size: 30
+  
+  # Checkpointing and recovery
+  enable_checkpoints: true
+  dry_run: false
+  verbose: false
+  
+  # Entity and test retry limits
+  max_entity_retries: 5
+  max_test_retries: 2
+  
+  # Simulation time (used in prompts)
+  simulation_time: "2025-01-23 15:00:00 EST"
+  
+  # Target blueprints per entity (legacy, now in steps.s04)
+  target_blueprints_per_entity: 25
+
+  # Task generation mode: "single", "cross_domain", or "both"
+  task_mode: cross_domain
+  
+  # Number of cross-domain combinations to generate (for cross_domain mode)
+  cross_domain_combinations: 400
+
+# -----------------------------------------------------------------------------
+# Step-Specific Configuration
+# -----------------------------------------------------------------------------
+# Each step can have:
+#   - enabled: Whether to run this step (default: true)
+#   - model: Override LLM model for this step (null = use default)
+#   - Step-specific parameters
+#
+# Model options: claude-sonnet-4-20250514, claude-opus-4-5-20251101, 
+#                claude-haiku-4-5-20251001, or any model from models.yaml
+# -----------------------------------------------------------------------------
+
+steps:
+  # ---------------------------------------------------------------------------
+  # Phase 1: Domain & Entity
+  # ---------------------------------------------------------------------------
+  
+  # Step 1: Domain Expansion
+  # Expand seed domains into diverse sub-domains
+  # Uses: textual model
+  s01_domain_expansion:
+    enabled: true
+    model: null                    # Use default textual model
+    target_domain_number: 300      # Target number of domains to generate
+    expansion_batch_size: 20       # Domains to expand per iteration
+    diversity_check_batch: 50      # Batch size for diversity checking
+  
+  # Step 2: Entity Extraction
+  # Extract entities from domain topics
+  # Uses: textual model
+  s02_entity_extraction:
+    enabled: true
+    model: null                    # Use default textual model
+    entities_per_domain: 5         # Target entities per domain
+  
+  # Step 3: Entity Graph Generation
+  # Build entity relationship graph
+  # Uses: textual model
+  s03_entity_graph:
+    enabled: true
+    model: null                    # Use default textual model
+    relation_batch_size: 10       # Entities per batch when checking relationships
+
+  # ---------------------------------------------------------------------------
+  # Phase 2: Blueprint & Tools
+  # ---------------------------------------------------------------------------
+  
+  # Step 4: Blueprint Generation
+  # Generate MCP server blueprints from entities
+  # Uses: textual model
+  s04_blueprint_generation:
+    enabled: true
+    model: null                    # Use default textual model
+    target_blueprints_per_entity: 10
+    min_functions_per_blueprint: 10
+    max_peripheral_entities: 3
+    max_relationships_per_blueprint: 3 # should be at least number of max_peripheral_entities
+    max_feedback_attempts: 2           # retries with feedback when validation fails (e.g., too many relationships)
+  
+  # Step 5: Tool List Formulation
+  # Fix blueprints and extract OpenAI-format tool lists
+  # No LLM calls - pure data processing
+  s05_tool_list_formulation:
+    enabled: true
+
+  # ---------------------------------------------------------------------------
+  # Phase 3: Implementation
+  # ---------------------------------------------------------------------------
+  
+  # Step 6: Database Generation
+  # Generate mock databases for entities and relationships through 6 sub-steps:
+  # 1. Load data (entities, blueprints)
+  # 2. Generate Entity Database (Entity-wise parallelism)
+  # 3. Summary Entity Database (Entity-wise parallelism)
+  # 4. Identify Relationship Constraints ((Server, Rel) parallelism)
+  # 5. Generate Relationship Database ((Server, Rel) parallelism)
+  # 6. Summary Relationship Database ((Server, Rel) parallelism)
+  # Uses: coding model for script generation, textual model for summaries
+  s06_database_generation:
+    enabled: true
+    model: null                    # Use default models (coding for scripts, textual for summaries)
+    entities_per_table: 300        # Records per entity/relationship table
+    max_code_fix_retries: 3        # Max Block Editor fix attempts before Step-wise retry
+    script_timeout: 120            # Timeout for running data scripts (seconds)
+    simulation_time: "2025-01-23 15:00:00 EST"  # Simulation time for data generation
+  
+  # Step 7: Policy Generation
+  # Generate domain policies for MCP servers
+  # Uses: textual model
+  s07_policy_generation:
+    enabled: true
+    model: null                    # Use default textual model
+    enable_validation: true        # Enable policy validation against schema
+    simulation_time: "2025-01-23 15:00:00 EST"
+  
+  # Step 8: Tool Graph Generation
+  # Generate tool execution dependency graphs
+  # Uses: textual model
+  s08_tool_graph_generation:
+    enabled: true
+    model: null                    # Use default textual model
+  
+  # Step 9: MCP Server Implementation
+  # Implement and test MCP servers
+  # Uses: coding model for code/tests
+  s09_mcp_server_implementation:
+    enabled: true
+    code_model: claude-opus-4-5-20251101  # Use strong model for server code
+    test_model: claude-opus-4-5-20251101  # Use strong model for unit tests
+    max_test_retries: 3            # Max test retry attempts
+    max_fix_attempts: 5            # Max code fix attempts
+    simulation_time: "2025-01-23 15:00:00 EST"
+
+  # ---------------------------------------------------------------------------
+  # Phase 4: Cross-Domain (only when task_mode includes cross_domain)
+  # ---------------------------------------------------------------------------
+  
+  # Step 10: Domain Combos Selection
+  # Select cross-domain combinations for task generation
+  # No LLM calls - combinatorial selection
+  s10_domain_combos_selection:
+    enabled: true
+    min_shared_entities: 1         # Minimum shared entities for valid combo
+    max_domains_per_combo: 3       # Maximum domains in a combination
+  
+  # Step 11: Trajectory Fusion
+  # Fuse tool trajectories across domains
+  # Uses: textual model
+  s11_trajectory_fusion:
+    enabled: true
+    model: null                    # Use default textual model
+    trajectories_per_combo: 5      # Target trajectories per combination
+  
+  # Step 12: Database Fusion
+  # Fuse databases for cross-domain tasks
+  # No LLM calls - data merging
+  s12_database_fusion:
+    enabled: true
+  
+  # Step 13: Policy Merge
+  # Merge domain policies for cross-domain tasks
+  # Uses: textual model
+  s13_policy_merge:
+    enabled: true
+    model: null                    # Use default textual model
+    max_policy_length: 4000        # Max chars of policy to include in prompt
+
+  # ---------------------------------------------------------------------------
+  # Phase 5: Task Generation
+  # ---------------------------------------------------------------------------
+  
+  # Step 14: Task Template Generation
+  # Generate task templates from tool graphs
+  # Uses: textual model
+  s14_task_template_generation:
+    enabled: true
+    model: null                    # Use default textual model
+    # Trajectory generation settings
+    min_trajectory_length: 2       # Minimum trajectory length (from start to end node)
+    max_trajectory_length: 5       # Maximum trajectory length
+    # LLM Judge settings
+    enable_judge: true             # Enable LLM Judge for quality filtering
+    judge_threshold: 3.0           # Minimum overall_score to keep template (1-5 scale)
+  
+  # Step 15: Instance Combos Selection
+  # Select entity instance combinations for task instantiation
+  # Uses Plan-Execution approach with LLM for constraint analysis and code generation
+  # Convergence detection: stops when progress_rate < min_progress_rate
+  s15_instance_combos_selection:
+    enabled: true
+    model: null                      # Use default model for constraint analysis and code gen
+    samples_per_template: 3          # Entity instance samples per template
+    max_code_retries: 3              # Max retries for selection code execution
+    code_timeout: 60                 # Timeout for selection code execution (seconds)
+    enable_policy_filtering: true    # Filter policy to relevant tools only
+    enable_plan_execution: true      # Use Plan-Execution mode (false = random fallback)
+    min_progress_rate: 0.2           # Convergence threshold: stop when delta/failed < 20%
+  
+  # Step 16: Task Filtering
+  # Filter valid tasks by executing trajectories
+  # No LLM calls - trajectory execution validation
+  s16_task_filtering:
+    enabled: true
+    execution_timeout: 30          # Timeout for trajectory execution (seconds)
+  
+  # Step 17: Task Instantiation & Query Generation
+  # Instantiate tasks with entity values
+  # No LLM calls - template filling
+  s17_task_instantiation:
+    enabled: true

@@ -1,0 +1,37 @@
+# LLM Models Configuration
+# This file defines all available LLM models and their configurations.
+# All api_base and api_key values are explicit - no environment variable substitution.
+
+# Default models for different task types
+defaults:
+  textual: gpt-5                    # For text generation tasks (domain expansion, policy, etc.)
+  coding: claude-opus-4-5-20251101  # For code generation tasks (MCP servers, scripts, etc.)
+
+# Model definitions
+models:
+  # OpenAI GPT-5 - Primary textual model
+  # Note: GPT-5 requires temperature=1.0, use top_p for precision control
+  # top_p: 0.1 = very focused, 0.5 = balanced, 0.9 = more creative
+  gpt-5:
+    provider: openai
+    api_base: "YOUR_API_BASE"
+    api_key: "YOUR_API_KEY"
+    max_tokens: 128000
+    temperature: 1.0
+    supports_structured_output: true
+    
+  # Claude Opus 4.5 - Primary coding model  
+  claude-opus-4-5-20251101:
+    provider: anthropic
+    api_base: "YOUR_API_BASE"
+    api_key: "YOUR_API_KEY"
+    max_tokens: 64000
+    temperature: 0.0
+    supports_structured_output: true
+
+# Retry configuration (can be overridden in config.yaml)
+retry:
+  max_retries: 3
+  retry_delay: 2.0
+  retry_backoff: 2.0
+  max_delay: 60.0

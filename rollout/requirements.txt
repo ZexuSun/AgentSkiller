@@ -1,0 +1,19 @@
+# Rollout - Multi-Turn Tool Call Annotation Framework
+# Python 3.8+ required
+
+# Core LLM Integration
+litellm>=1.40.0              # Unified LLM API calls (supports 100+ providers)
+
+# Configuration & Data
+pyyaml>=6.0                  # YAML configuration parsing
+jsonlines>=3.1.0             # JSONL file handling (optional, can use stdlib)
+
+# Progress & CLI
+tqdm>=4.65.0                 # Progress bars
+colorama>=0.4.6              # Cross-platform colored terminal output (Windows support)
+
+# HTTP & Async (dependencies of litellm, listed for completeness)
+httpx>=0.24.0                # HTTP client
+aiohttp>=3.8.0               # Async HTTP client
+openai>=1.0.0                # OpenAI SDK (used by litellm)
+
