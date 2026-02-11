@@ -1,4 +1,4 @@
-"""Pydantic models for agent_skiller intermediate results."""
+"""Pydantic models for agentskiller intermediate results."""
 
 from .state import (
     WorkflowState,

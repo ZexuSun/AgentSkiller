@@ -1,4 +1,4 @@
-"""Configuration management for agent_skiller."""
+"""Configuration management for agentskiller."""
 
 from .settings import (
     Settings,

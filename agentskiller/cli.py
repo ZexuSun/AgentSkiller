@@ -1,10 +1,10 @@
 """
-Command-line interface for agent_skiller.
+Command-line interface for agentskiller.
 
 Usage:
-    python -m agent_skiller run [OPTIONS]
-    python -m agent_skiller status
-    python -m agent_skiller list-steps
+    python -m agentskiller run [OPTIONS]
+    python -m agentskiller status
+    python -m agentskiller list-steps
 """
 
 import logging
@@ -23,7 +23,7 @@ from .graph.workflow import WORKFLOW_STEPS, get_step_info
 from .graph.runner import run_workflow, run_single_step, list_steps as get_step_list
 
 app = typer.Typer(
-    name="agent_skiller",
+    name="agentskiller",
     help="Data Synthesis Workflow",
     add_completion=False,
 )
@@ -75,10 +75,10 @@ def run(
     Run the workflow.
     
     Examples:
-        agent_skiller run                    # Run all steps
-        agent_skiller run -s s01             # Run step 1 only
-        agent_skiller run -f s04             # Start from step 4
-        agent_skiller run --dry-run          # Dry run mode
+        agentskiller run                    # Run all steps
+        agentskiller run -s s01             # Run step 1 only
+        agentskiller run -f s04             # Start from step 4
+        agentskiller run --dry-run          # Dry run mode
     """
     setup_logging(verbose)
     

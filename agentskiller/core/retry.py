@@ -1,5 +1,5 @@
 """
-Step retry mechanism for agent_skiller.
+Step retry mechanism for agentskiller.
 
 Provides auto-retry functionality for workflow steps:
 - Automatic retry until step completely succeeds

@@ -1,4 +1,4 @@
-"""Core utilities for agent_skiller."""
+"""Core utilities for agentskiller."""
 
 from .llm_client import (
     LLMClient,

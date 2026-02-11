@@ -124,7 +124,7 @@ def policy_generation_step(state: WorkflowState) -> WorkflowState:
         policy_prompt = DOMAIN_POLICY_PROMPT.format(
             blueprint=json.dumps(blueprint, indent=2),
             summary=summary,
-            example_policy=open("agent_skiller/airline.md", "r").read(),
+            example_policy=open("agentskiller/airline.md", "r").read(),
             simulation_time=simulation_time,
             policy_structure_instructions=POLICY_STRUCTURE_INSTRUCTIONS,
             tool_names=", ".join(function_names)

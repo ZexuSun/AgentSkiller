@@ -1,5 +1,5 @@
 """
-Parallel processing utilities for agent_skiller.
+Parallel processing utilities for agentskiller.
 
 Provides reusable parallel processing with:
 - ThreadPoolExecutor-based parallelism
