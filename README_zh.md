@@ -110,6 +110,32 @@ python -m evaluator.run_evaluation --mode all \
   --output outputs/evaluation/results.jsonl
 ```
 
+## 👀 AgentSkiller 流程总览
+
+* **单域（Single Domain）**：Step `01` – `09` & Step `14` – `17`
+* **跨域（Cross Domain）**：Step `01` – `09` & Step `10` – `13` & Step `14` – `17`
+
+### 每步做什么（速查表）
+|Step|名称|作用|主要产物（默认在 `outputs/`）|备注|
+|-|-|-|-|-|
+|s01|domain_expansion|扩展 seed domains|`domain_topics.json`||
+|s02|entity_extraction|抽取实体|`entities.json`||
+|s03|entity_graph|构建实体图|`entity_graph.json`||
+|s04|blueprint_generation|生成 MCP 蓝图|`blueprints.json`||
+|s05|tool_list_formulation|修复蓝图并导出 tool lists|`blueprints.json`,  `tool_lists/*.json`||
+|s06|database_generation|生成实体/关系数据库与摘要|`database/`,  `database_summary/`|代码生成 + 执行|
+|s07|policy_generation|生成 domain policy|`policies/*.md`|含结构化 markers（供过滤）|
+|s08|tool_graph_generation|生成工具依赖图|`tool_graphs/*.json`||
+|s09|mcp_server_implementation|实现 MCP server + tests|`mcp_servers/*.py`||
+|s10|domain_combos_selection|选跨域组合|`cross_domain_templates/_combinations.json`|**跨域专用**|
+|s11|trajectory_fusion|跨域轨迹融合|`cross_domain_templates/*.json`|**跨域专用**|
+|s12|database_fusion|跨域数据库融合|`database/outputs/relationships/{fused}/*.json` `database/outputs/entities/{fused}/*.json`|**跨域专用**|
+|s13|policy_merge|跨域 policy 合并|`policies/{fused}.md`|**跨域专用**|
+|s14|task_template_generation|生成 task templates|`task_templates/*.json`||
+|s15|instance_combos_selection|为模板选择/生成实例组合|`combinations/**`或 `validated_tasks/**`|单域 Sampling；跨域 Creation-Validation|
+|s16|task_filtering|执行轨迹验证过滤|`validated_tasks/**`|只有Single Domain需要|
+|s17|task_instantiation|实例化任务并生成 queries|`queries/*.jsonl`|实例化 + query 生成|
+
 ## 📦 产物在哪里
 
 - **合成产物**：`outputs/`（queries、生成的 MCP servers、数据库、policies 等）
@@ -124,3 +150,19 @@ python -m evaluator.run_evaluation --mode all \
   见 `rollout/README_zh.md` / `rollout/README.md`
 - **`evaluator/`（评测）**：执行 golden trajectory 并用多 evaluator 打分  
   见 `evaluator/README_zh.md` / `evaluator/README.md`
+
+
+## 🔗 引用
+
+如果你觉得这个工作对你有帮助，请引用:
+```
+@misc{sun2026agentskillerscalinggeneralistagent,
+      title={AgentSkiller: Scaling Generalist Agent Intelligence through Semantically Integrated Cross-Domain Data Synthesis}, 
+      author={Zexu Sun and Bokai Ji and Hengyi Cai and Shuaiqiang Wang and Lei Wang and Guangxia Li and Xu Chen},
+      year={2026},
+      eprint={2602.09372},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2602.09372}, 
+}
+```

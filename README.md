@@ -105,6 +105,32 @@ python -m evaluator.run_evaluation --mode all \
   --output outputs/evaluation/results.jsonl
 ```
 
+## 👀 AgentSkiller Workflow Overview
+
+* **Single Domain**: Step `01` – `09` & Step `14` – `17`
+* **Cross Domain**: Step `01` – `09` & Step `10` – `13` & Step `14` – `17`
+
+### Step-by-Step Guide (Quick Reference)
+|Step|Name|Function|Primary Artifacts (Default in `outputs/`)|Note|
+|-|-|-|-|-|
+|s01|domain_expansion|Expand seed domains|`domain_topics.json`||
+|s02|entity_extraction|Extract entities|`entities.json`||
+|s03|entity_graph|Construct entity graph|`entity_graph.json`||
+|s04|blueprint_generation|Generate MCP blueprints|`blueprints.json`||
+|s05|tool_list_formulation|Repair blueprints and export tool lists|`blueprints.json`, `tool_lists/*.json`||
+|s06|database_generation|Generate entity/relationship databases and summaries|`database/`, `database_summary/`|Code generation + Execution|
+|s07|policy_generation|Generate domain policy|`policies/*.md`|With structured markers (for filtering)|
+|s08|tool_graph_generation|Generate tool dependency graph|`tool_graphs/*.json`||
+|s09|mcp_server_implementation|Implement MCP server + tests|`mcp_servers/*.py`||
+|s10|domain_combos_selection|Select cross-domain combinations|`cross_domain_templates/_combinations.json`|**Cross-domain only**|
+|s11|trajectory_fusion|Cross-domain trajectory fusion|`cross_domain_templates/*.json`|**Cross-domain only**|
+|s12|database_fusion|Cross-domain database fusion|`database/outputs/relationships/{fused}/*.json` `database/outputs/entities/{fused}/*.json`|**Cross-domain only**|
+|s13|policy_merge|Cross-domain policy merge|`policies/{fused}.md`|**Cross-domain only**|
+|s14|task_template_generation|Generate task templates|`task_templates/*.json`||
+|s15|instance_combos_selection|Select/generate instance combinations for templates|`combinations/**` or `validated_tasks/**`|Single-domain: Sampling; Cross-domain: Creation-Validation|
+|s16|task_filtering|Execute trajectory validation filtering|`validated_tasks/**`|Required for Single Domain only|
+|s17|task_instantiation|Instantiate tasks and generate queries|`queries/*.jsonl`|Instantiation + Query generation|
+
 ## 📦 What gets produced
 
 - **Synthesis outputs**: `outputs/` (queries, generated MCP servers, databases, policies, etc.)
