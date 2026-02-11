@@ -241,7 +241,7 @@ class TrajectoryPruner:
     @property
     def llm_client(self):
         if self._llm_client is None:
-            from agent_skiller.core.llm_client import get_client
+            from agentskiller.core.llm_client import get_client
             self._llm_client = get_client()
         return self._llm_client
     
@@ -250,7 +250,7 @@ class TrajectoryPruner:
         if self._llm_model:
             return self._llm_model
         try:
-            from agent_skiller.config import get_settings
+            from agentskiller.config import get_settings
             return get_settings().llm.fast_model
         except Exception:
             return None
@@ -388,7 +388,7 @@ class TrajectoryPruner:
         from concurrent.futures import ThreadPoolExecutor, as_completed
         
         try:
-            from agent_skiller.config import get_settings
+            from agentskiller.config import get_settings
             workers = max_workers or get_settings().workflow.max_workers
         except Exception:
             workers = max_workers or 4
@@ -917,7 +917,7 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    from agent_skiller.config import init_settings
+    from agentskiller.config import init_settings
     init_settings()
     
     prune_task_directory(

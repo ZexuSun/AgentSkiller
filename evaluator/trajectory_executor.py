@@ -516,7 +516,7 @@ class TrajectoryExecutor:
     @property
     def llm_client(self):
         if self._llm_client is None:
-            from agent_skiller.core.llm_client import get_client
+            from agentskiller.core.llm_client import get_client
             self._llm_client = get_client()
         return self._llm_client
     
@@ -526,7 +526,7 @@ class TrajectoryExecutor:
         if self._llm_model:
             return self._llm_model
         try:
-            from agent_skiller.config import get_settings
+            from agentskiller.config import get_settings
             return get_settings().llm.coding_model
         except Exception:
             return None  # Will use default from LLMClient
@@ -1030,7 +1030,7 @@ class TrajectoryExecutor:
     ) -> str:
         """Ask LLM to fix the parameter extraction code using SEARCH/REPLACE."""
         import tempfile
-        from agent_skiller.core import WorkflowBlockEditor
+        from agentskiller.core import WorkflowBlockEditor
         
         try:
             # Write code to temp file for BlockEditor

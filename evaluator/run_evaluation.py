@@ -48,7 +48,7 @@ logger = logging.getLogger(__name__)
 
 # Import parallel processing utilities
 try:
-    from agent_skiller.core.parallel import parallel_process
+    from agentskiller.core.parallel import parallel_process
     HAS_PARALLEL = True
 except ImportError:
     HAS_PARALLEL = False

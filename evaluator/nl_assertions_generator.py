@@ -168,7 +168,7 @@ class NLAssertionsGenerator:
         if self._model:
             return self._model
         try:
-            from agent_skiller.config import get_settings
+            from agentskiller.config import get_settings
             return get_settings().llm.strong_model
         except Exception:
             return "gpt-4o-mini"
@@ -177,7 +177,7 @@ class NLAssertionsGenerator:
     def llm_client(self):
         """Lazy load LLM client."""
         if self._llm_client is None:
-            from agent_skiller.core.llm_client import get_client
+            from agentskiller.core.llm_client import get_client
             self._llm_client = get_client()
         return self._llm_client
     
