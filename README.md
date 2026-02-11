@@ -143,3 +143,19 @@ python -m evaluator.run_evaluation --mode all \
 - **`rollout/` (data collection)**: run an LLM-simulated user + assistant to produce multi-turn rolloutsSee `rollout/README.md` / `rollout/README_zh.md`.
 - **`evaluator/` (evaluation)**: execute golden trajectories and score rollouts with multiple evaluators
   See `evaluator/README.md`.
+
+
+## 🔗 Citation
+
+If you find this work useful, please kindly cite:
+```
+@misc{sun2026agentskillerscalinggeneralistagent,
+      title={AgentSkiller: Scaling Generalist Agent Intelligence through Semantically Integrated Cross-Domain Data Synthesis}, 
+      author={Zexu Sun and Bokai Ji and Hengyi Cai and Shuaiqiang Wang and Lei Wang and Guangxia Li and Xu Chen},
+      year={2026},
+      eprint={2602.09372},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2602.09372}, 
+}
+```
