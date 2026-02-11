@@ -3,9 +3,9 @@
 </div>
 <hr>
 <div align="center" style="line-height: 1;">
-  <a href="https://huggingface.co/deepseek-ai"><img alt="Hugging Face"
+  <a href="https://huggingface.co/AgentSkiller/datasets"><img alt="Hugging Face"
     src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-%20Dataset-ffc107?color=ffc107&logoColor=white"/></a>
-  <a href="https://huggingface.co/deepseek-ai"><img alt="Hugging Face"
+  <a href="https://huggingface.co/AgentSkiller/models"><img alt="Hugging Face"
     src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Models%20-ffc107?color=ffc107&logoColor=white"/></a>
   <a href="">
     <img src="https://img.shields.io/badge/Blog-WeChat-07c160?logo=wechat&logoColor=white" alt="WeChat Blog">
